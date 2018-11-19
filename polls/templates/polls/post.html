@@ -1,0 +1,25 @@
+{% extends "polls/index.html"%}
+{% block content %}
+<h1>ADD POLL </h1>
+    <form action="{% url 'polls:form' %}" enctype='multipart/form-data' method="post">
+        {% csrf_token %}
+        {% for field in form %}
+          <p>
+            {{ field.label_tag }}<br>
+            {{ field }}
+            {% for error in field.errors %}
+              <p style="color: red">{{ error }}</p>
+            {% endfor %}
+            {% if field.help_text %}
+              <large style="color: grey">{{ field.help_text }}</large>
+
+            {% endif %}
+
+           </p>
+        {% endfor %}
+        <input type="submit" name="submit" value="submit"><br>
+        <p>* are required fields</p>
+
+
+    </form>
+{% endblock %}

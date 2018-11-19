@@ -1,20 +1,11 @@
-<!DOCTYPE html>
-{% load static %}
-<html lang="en" dir="ltr">
-    <head>
-        <meta charset="utf-8">
-        <link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-        crossorigin="anonymous">
+{% extends 'polls/index.html' %}
+{% load staticfiles %}
+{% block content %}
 
-        <title></title>
-    </head>
-    <body>
-        <div class="container">
-            <div class="jumbotron">
-                    <h1>{{ question.question_text }}</h1>
-            </div>
+        <h1>{{ question.question }}</h1>
+        <h4>by {{question.auth.username}}</h4>
+
+        <img src="{{question.image.url}}" class="img-responsive"/>
 
 
             {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
@@ -22,12 +13,30 @@
             <form class="success" action="{% url 'polls:vote' question.id %}" method="post">
             {% csrf_token %}
             {% for choice in question.choice_set.all %}
-                <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
-                <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
+                <h3><input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+                    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br></h3>
             {% endfor %}
+
             <input type="submit" value="Vote">
             </form>
-        </div>
+            <h2>COMMENTS</h2>
+            {% if comment %}
+                    {% for comments in comment %}
 
-    </body>
-</html>
+                            <p>{{comments.auth}}<br>
+                            <h4>{{comments.comment}}</h4><br>
+                            {{comments.pub_date}}</p><br>
+                    {% endfor %}
+            {% else %}
+                    <p>no comments</p>
+            {% endif %}
+
+            <h2>ADD COMMENT</h2>
+            <form action="{% url 'polls:detail' question.id %}" method="post">
+                {% csrf_token %}
+                {{form.as_p}}
+
+                <input type="submit" name="submit" value="submit">
+
+            </form>
+{% endblock %}
